@@ -1,0 +1,16 @@
+lambda	800e-9	R	SI
+   
+I0	5.6e18	R	SI
+
+# We use the comment to separate sections
+
+Ip	0.5	R	a.u.
+Nx	1000	I	-
+a crappy line with invalid form
+filename	ionisations.inp	S	-
+
+ph	1+1i	C	# complex numbers are not supported yet
+
+n1	1	R	-
+E	5	R
+
