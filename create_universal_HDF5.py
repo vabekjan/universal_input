@@ -35,7 +35,7 @@ grp = GeneratedFile.create_group('inputs')
 def adddataset(h_path,sep_line,line):
   if (sep_line[2]=='R'): dset_id = h_path.create_dataset(sep_line[0], data=float(sep_line[1]))
   elif (sep_line[2]=='I'): dset_id = h_path.create_dataset(sep_line[0], data=int(sep_line[1]))
-  elif (sep_line[2]=='S'): dset_id = h_path.create_dataset(sep_line[0], data=sep_line[1])
+  elif (sep_line[2]=='S'): dset_id = h_path.create_dataset(sep_line[0], data=np.string_(sep_line[1]))
   else: print('warning in the line (type unrecognised and entry skipped): ' + line); return
 
   if (len(sep_line) < 4): print('warning in the line (missing units ?): ' + line)  
