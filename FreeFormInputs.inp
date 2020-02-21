@@ -11,6 +11,9 @@ filename	ionisations.inp	S	-
 
 ph	1+1i	C	# complex numbers are not supported yet
 
+X	3
+Y
+
 n1	1	R	-
 E	5	R
 

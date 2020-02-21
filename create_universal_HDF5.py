@@ -28,13 +28,19 @@ GeneratedFile = h5py.File(outputfilename, 'w') # be careful, now it trucates if 
 grp = GeneratedFile.create_group('inputs')
 
 def adddataset(h_path,sep_line,line):
+  if ( (0 < len(sep_line)) and (len(sep_line) < 3) ): print('warning in the line (input too short, entry skipped): ' + line); return
+
   if (sep_line[2]=='R'): dset_id = h_path.create_dataset(sep_line[0], data=float(sep_line[1]))
   elif (sep_line[2]=='I'): dset_id = h_path.create_dataset(sep_line[0], data=int(sep_line[1]))
   elif (sep_line[2]=='S'): dset_id = h_path.create_dataset(sep_line[0], data=np.string_(sep_line[1]))
   else: print('warning in the line (type unrecognised and entry skipped): ' + line); return
 
-  if (len(sep_line) < 4): print('warning in the line (missing units ?): ' + line)  
+  if (len(sep_line) < 4):
+    print('warning in the line (missing units ?): ' + line) 
+    dset_id.attrs['units']=np.string_('?') 
   else: dset_id.attrs['units']=np.string_('['+sep_line[3]+']')
+
+
 
 lines = InputFile.readlines()
 for line in lines:
