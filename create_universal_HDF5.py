@@ -46,8 +46,7 @@ lines = InputFile.readlines()
 for line in lines:
   sep_line = line.split(); # separate the line
   if ( (len(sep_line)==0) or (sep_line[0]=='#') or (sep_line[0]=='##') ): pass #print('empty or commented line')
-  else:    
-    adddataset(grp,sep_line,line)
+  else: adddataset(grp,sep_line,line)
 
 
 InputFile.close()
