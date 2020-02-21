@@ -24,7 +24,7 @@ outputfilename = 'results.h5'
 
 ## specify the name of files and datasets
 InputFile = open(inputfilename,"r")
-GeneratedFile = h5py.File(outputfilename, 'w') # be careful, now it trucates the already existing file
+GeneratedFile = h5py.File(outputfilename, 'w') # be careful, now it trucates if already exists
 grp = GeneratedFile.create_group('inputs')
 
 def adddataset(h_path,sep_line,line):
