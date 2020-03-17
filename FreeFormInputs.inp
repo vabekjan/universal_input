@@ -11,6 +11,10 @@ filename	ionisations.inp	S	-
 
 ph	1+1i	C	# complex numbers are not supported yet
 
+$array myrarrray R SI	3.14 2.71 1.0 # and with a comment, this is the only allowed commenting way
+$array myiarrray I -	1 2 3 4 5
+$array mysarrray S -	par1 par2 longpar3
+
 X	3
 Y
 
