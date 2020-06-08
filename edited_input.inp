@@ -1,0 +1,94 @@
+[FreeFormFormat]
+
+number_of_processors 32 I 
+run_time_in_hours 23.5e0 R 
+length_of_window_for_t_normalized_to_pulse_duration 8.0e0 R 
+number_of_points_in_t 2048 I 
+length_of_window_for_r_normalized_to_beamwaist 4.0e0 R 
+number_of_points_in_r 2048 I 
+number_of_absorber_points_in_time 16 I 
+phase_threshold_for_decreasing_delta_z 2.0e-3 R 
+physical_distance_of_propagation 2.0e0 R [m]
+physical_output_distance_for_matlab_files 1.0e-1 R [m]
+output_distance_in_z-steps_for_fluence_and_power 100 I 
+radius_for_diagnostics 0.1e0 R [mm]
+physical_first_stepwidth 1.0e-2 R [mm]
+operators_t_t-1 2 I 
+
+
+
+laser_wavelength 800.0e-7 R [cm]
+beamwaist 1.0e-1 R [cm]
+degree_of_supergaussian 1 I 
+pulse_duration_in_1_e 50.0e0 R [fs]
+degree_of_supergaussian_in_time 1 I 
+ratio_pin_pcr 2.0e0 R 
+input 1 I 
+
+filename_for_method_2 nrl.dat S 
+filename_for_method_3 000_000000 S 
+amplituderatio_for_method_3 1.0e0 R 
+spatial_noise_on_the_input_shape 0.0e0 R 
+temporal_noise_on_the_input_shape 0.0e0 R 
+noise_on_the_input_shape 0.0e0 R 
+focal_length_in_the_medium_cm 50.0e0 R [0 for no lense]
+initial_chirp_phase 0.0e0 R 
+
+
+pressure_in_bar 1.0e0 R 
+
+
+type_of_dispersion_law 3 I 
+
+filename_for_method_4 waterchi.tab S 
+
+linear_refractive_index 1.45e0 R 
+inverse_gv_coefficient-n0_c 0.0e0 R [fs/cm]
+gvd_coefficient -279.0e0 R [fs2/cm]
+third_order_dispersion_coefficient 1510.0e0 R [fs3/cm]
+fourth_order_dispersion_coefficient -4930.0e0 R [fs4/cm]
+fifth_order_dispersion_coefficient 23245.0e0 R [ fs5/cm]
+
+nonlinear_refractive_index_kerr_coefficient 1.0e-19 R [cm2/w]
+type_of_delayed_kerr_response 1 I 
+
+ratio_of_delayed_kerr_xdk 0.5e0 R 
+time_of_delayed_kerr_tdk 77.0e0 R [fs]
+frequency_in_delayed_kerr_wr 1.6e-2 R [fs-1]
+
+chi5_coefficient 0.0e0 R [cm4/w2]
+
+effective_density_of_neutral_molecules 2.7e19 R [cm-3]
+ionization_poential_of_neutral_molecules 15.8e0 R [ev]
+initial_electron_density 0.0e0 R [cm-3]
+type_of_ionization_method 3 I 
+
+mpi_cross_section_for_method_1-2 1.9e-120 R [s-1cm2k/wk]
+angular_momentum_for_method_3_7 1 I 
+effective_residue_charge_for_method_3-4_7 1.0e0 R 
+reduced_mass_of_hole-electron_for_method_5 0.5e0 R 
+number_of_photons_to_ionize_from_slg1 3 I [method 6]
+cross_section_to_ionize_from_slg1 8.6e-27 R [m 6, s-1cm2kp/wkp]
+density_of_defects_slg1 2.0e17 R [cm-3]
+cross_section_to_ionize_from_slg2 2.0e0 R [m 6, s-1cm2/w]
+sigmacvref_for_i_ref 4.35e-7 R [method 6, cm2/s]
+reference_intensity_i_ref 42.32e12 R [method 6, w/cm^2]
+reference_exponent_exp_ref -3.3e0 R [method 6]
+number_of_photons_to_populate_slg2 2 I [method 6]
+cross_section_to_populate_slg2 1.3e-12 R [m 6, s-1cm2kpp/wkpp]
+saturation_density_for_slg2 2.0e17 R [method 6,  cm-3]
+effective_density_of_neutral_n2_molecules 2.2e19 R [m 7, cm-3]
+ionization_poential_of_neutral_n2_molecules 15.6e0 R [m 7, ev]
+angular_momentum_n2_for_method_7 0 I 
+effective_residue_charge_n2_for_method_7 0.9e0 R 
+initial_free_electron_temperature 0.025e0 R [m 7, ev]
+
+electron_colision_time 190.0e0 R [method 1-6, fs]
+linear_recombination_coefficient 0.0e0 R [fs-1]
+linear_recombination_coefficient_(6:_slg1_elec.) 3.3e-3 R [fs-1]
+linear_recombination_coefficient_(6:_holes) 1.0e-3 R [fs-1]     
+quadratic_recombination_(gasses) 0.0e0 R [fs-1cm3]
+
+number_of_photons_involved_in_the_n-absorption 2 I 
+the_n-photon_absoption_cross_section 0.0e0 R [s-1cm2n/wn]
+density_of_absorbing_molecules 0.0e0 R 
