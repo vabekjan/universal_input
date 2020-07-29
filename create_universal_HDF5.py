@@ -23,12 +23,10 @@ import shutil
 # Load argument for input file - the name of the file is argument 0, so we want argument 1
 
 def help():
-    print("usage: python create_universal_HDF5.py [-o output_file] [input_file]")
-    print("Without any arguments it uses FreeFormInputs.inp in the current directory.")
+    print("usage: python create_universal_HDF5.py -i [input file] -ihdf5 [input archive] -ohdf5 [output archive] -g [the group with inputs]")
     exit(0)
 
-def verify_input_file(filename):
-    inputfilename = str(arguments[1])    
+def verify_input_file(inputfilename):
     print('Given file:', inputfilename)
     if not os.path.exists(inputfilename):
        print("Error: File {file} does not exists.".format(file=inputfilename))
@@ -47,10 +45,14 @@ if len(arguments) == 9: # the input are -i [input file] -ihdf5 [input archive] -
     target_archive = arguments[arg_index+1]
     arg_index = arguments.index("-g")
     groupname = arguments[arg_index+1]
+elif arguments[1] == "--help" or arguments[1] == "-h":
+        help()
 else:
     print("The code now requires precise specification of input arguments")
     exit(1)
 
+verify_input_file(inputfilename)
+verify_input_file(source_archive)
 
 
 # inputfilename = 'FreeFormInputs.inp'
