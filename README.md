@@ -3,13 +3,16 @@ This scripts converts input files of two types to HDF5 file.
 
 ### Usage:
 ``` bash
-python create_universal_HDF5.py [-o output_file] [input_file]
+usage: python create_universal_HDF5.py -i [input file] -ihdf5 [input archive] -ohdf5 [output archive] -g [the group with inputs]
+
+The input archive is optional, output archive is a copy of the input archive with the inputs added.
 ```
+The arguments need to be given except optional. There is no need to order them.
 
 ### The Free Form Format Input
-#### Format
-Every Free Form Format Input file has `[FreeFormFormat]` tag on the very first line.
 The input lines then have following form:
+
+### 1: standard lines
 
 | Name of the variable | Value for this variable | Type  |  Units | Comments |
 | ------ | ------ | ------ | ------ | ------ |
@@ -20,17 +23,6 @@ The input lines then have following form:
 | ------ | ------ | ------ | ------ | ------ |
 | `radius_for_diagnostics` | `0.1e0` | `R` | `[mm]` | `# Radius for ... ` |
 
-## Other supported inputs
-### Unformatted Fortran Input file
-#### Format <br>
-
-Each line of the format has this form:
-
-`name of variable [units]/(units) : value`
-
-Value is a valid Fortran value: Integer, Real or String.
-Any line with different format is ignored.
-
-#### Example
-
-`Physical distance of propagation (m)   : 2.d0 `
+### 2: special 
+Using keywords defined by $. Currently only `$array` available. It works as the usual variable except there is multiple values provided until the end of line or comment started with `#`. Example:
+`$array myrarrray R SI	3.14 2.71 1.0 # this is the only allowed commenting way`
