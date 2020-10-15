@@ -25,4 +25,5 @@ The input lines then have following form:
 
 ### 2: special 
 Using keywords defined by $. Currently only `$array` available. It works as the usual variable except there is multiple values provided until the end of line or comment started with `#`. Example:
+
 `$array myrarrray R SI	3.14 2.71 1.0 # this is the only allowed commenting way`
