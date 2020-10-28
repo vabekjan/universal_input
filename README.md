@@ -29,7 +29,7 @@ Using keywords defined by $.
 
 `$array myrarrray R SI	3.14 2.71 1.0 # this is the only allowed commenting way`
 
-- `$matrix`. THere is a driving line specifiyng the propaeties of the matrix. There are dimensions of the matrix (number of rows x number of columns) and this line is followed by the matrix. Example:
+- `$matrix`. There is a driving line specifiyng the propaeties of the matrix. There are dimensions of the matrix (number of rows x number of columns) and this line is followed by the matrix. Example:
 
 
 >$matrix	mymatrixreal	R	SI	3	4 \
