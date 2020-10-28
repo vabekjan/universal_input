@@ -24,6 +24,15 @@ The input lines then have following form:
 | `radius_for_diagnostics` | `0.1e0` | `R` | `[mm]` | `# Radius for ... ` |
 
 ### 2: special 
-Using keywords defined by $. Currently only `$array` available. It works as the usual variable except there is multiple values provided until the end of line or comment started with `#`. Example:
+Using keywords defined by $. 
+- `$array`. It works as the usual variable except there is multiple values provided until the end of line or comment started with `#`. Example:
 
 `$array myrarrray R SI	3.14 2.71 1.0 # this is the only allowed commenting way`
+
+- `$matrix`. THere is a driving line specifiyng the propaeties of the matrix. There are dimensions of the matrix (number of rows x number of columns) and this line is followed by the matrix. Example:
+
+
+>$matrix	mymatrixreal	R	SI	3	4 \
+1	2	3	4\
+5	6	7	8\
+9	10	11	12

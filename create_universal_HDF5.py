@@ -30,7 +30,7 @@ def help():
 ## dealing with the input arguments
 output_file = ""
 arguments = sys.argv
-if ( len(arguments) == 9 or len(arguments) == 7): # the input are -i [input file] -ihdf5 [input archive] -ohdf5 [output archive] -g [the group with inputs]
+if ( len(arguments) == 9 or len(arguments) == 7): # the inputs are -i [input file] -ihdf5 [input archive] -ohdf5 [output archive] -g [the group with inputs]
     arg_index = arguments.index("-i")
     inputfilename = arguments[arg_index+1]
     arg_index = arguments.index("-ohdf5")
@@ -101,6 +101,32 @@ def add_dataset_array(h_path, sep_line, line):
     dset_id = h_path.create_dataset(name, data=data)
     dset_id.attrs['units'] = np.string_('[' + unit + ']')
 
+def add_dataset_matrix(h_path, aggregated_lines, driving_line):
+    sep_line = driving_line.split()
+    name = sep_line[1]
+    type = sep_line[2]
+    unit = sep_line[3]
+    Nrow = int(sep_line[4])
+    Ncol = int(sep_line[5])
+
+    for row in aggregated_lines:
+        if (len(row) != Ncol): # check if all lines matches the given length
+            print('warning in the matrix given by: ' + driving_line)
+            print('wrong length of the line: ' + row)
+            print('matrix-entry skipped')
+            return
+
+    if (type == 'R'):
+        data = np.asarray(aggregated_lines, dtype='d')
+    elif (type == 'I'):
+        data = np.asarray(aggregated_lines, dtype='i')
+    elif (type == 'S'):
+        data = np.asarray(np.string_(aggregated_lines))
+    else:
+        print('warning in the matrix (type unrecognised and matrix-entry skipped): ' + driving_line)
+        return
+    dset_id = h_path.create_dataset(name, data=data)
+    dset_id.attrs['units'] = np.string_('[' + unit + ']')
 
 
 ## MAIN PROGRAM
@@ -111,12 +137,25 @@ with open(inputfilename, "r") as InputFile, h5py.File(target_archive, 'a') as Ge
     lines = InputFile.readlines()
     grp = GeneratedFile.create_group(groupname)
 
+    k_agg = 0
+    driving_line = []
+    aggregated_lines = []
     for line in lines:
         sep_line = line.split();  # separate the line
         if ((len(sep_line) == 0) or (sep_line[0] == '#') or (sep_line[0] == '##')):
             pass  # print('empty or commented line')
+        elif (k_agg > 0):
+            aggregated_lines.append(sep_line)
+            k_agg = k_agg - 1
+            if (k_agg == 0):
+                add_dataset_matrix(grp, aggregated_lines, driving_line)  # at the moment we need precise alignment
+                driving_line = []
+                aggregated_lines = []
         elif (sep_line[0] == '$array'):
             add_dataset_array(grp, sep_line, line)  # at the moment we need precise alignment
+        elif (sep_line[0] == '$matrix'):
+            driving_line = line
+            k_agg = int(sep_line[4])
         else:
             add_dataset(grp, sep_line, line)
 
