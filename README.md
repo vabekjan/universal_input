@@ -36,3 +36,5 @@ Using keywords defined by $.
 1	2	3	4\
 5	6	7	8\
 9	10	11	12
+
+- `$matrixtr`. The same as `$matrix`, but the matrix is transposed in the HDF5 archive (the input form is exactly the same).

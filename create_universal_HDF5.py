@@ -108,6 +108,7 @@ def add_dataset_matrix(h_path, aggregated_lines, driving_line):
     unit = sep_line[3]
     Nrow = int(sep_line[4])
     Ncol = int(sep_line[5])
+    transpose = (sep_line[0] == '$matrixtr')
 
     for row in aggregated_lines:
         if (len(row) != Ncol): # check if all lines matches the given length
@@ -125,6 +126,7 @@ def add_dataset_matrix(h_path, aggregated_lines, driving_line):
     else:
         print('warning in the matrix (type unrecognised and matrix-entry skipped): ' + driving_line)
         return
+    if transpose: data = np.transpose(data)
     dset_id = h_path.create_dataset(name, data=data)
     dset_id.attrs['units'] = np.string_('[' + unit + ']')
 
@@ -153,7 +155,7 @@ with open(inputfilename, "r") as InputFile, h5py.File(target_archive, 'a') as Ge
                 aggregated_lines = []
         elif (sep_line[0] == '$array'):
             add_dataset_array(grp, sep_line, line)  # at the moment we need precise alignment
-        elif (sep_line[0] == '$matrix'):
+        elif ((sep_line[0] == '$matrix') or (sep_line[0] == '$matrixtr')):
             driving_line = line
             k_agg = int(sep_line[4])
         else:
