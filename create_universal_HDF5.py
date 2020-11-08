@@ -161,7 +161,7 @@ with open(inputfilename, "r") as InputFile, h5py.File(target_archive, 'a') as Ge
             grp = GeneratedFile[groupname]
             print('warning: group already exists, possible conflicts will be overwritten, consider repacking if applied.')
         else:
-            print("Problem creating group, consider '-override' option for adding new inputs in an existing group.")
+            print("Problem creating group, consider '-override' option for adding new inputs into an existing group.")
             exit(1)
 
     k_agg = 0
