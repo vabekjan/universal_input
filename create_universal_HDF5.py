@@ -24,13 +24,16 @@ import shutil
 
 def help():
     print("usage: python create_universal_HDF5.py -i [input file] -ihdf5 [input archive] -ohdf5 [output archive] -g [the group with inputs]\n"
-          "       The input archive is optional, output archive is a copy of the input archive with the inputs added.")
+          "       [-override]\n"
+          "       The input archive is optional, output archive is a copy of the input archive with the inputs added.\n"
+          "       The code cannot by default add to an existing group. Using '-override' flag allows this option. Existing\n"
+          "       datasets are replaced (former are unlinked, consider repacking if applied).")
     exit(0)
 
 ## dealing with the input arguments
 output_file = ""
 arguments = sys.argv
-if ( len(arguments) == 9 or len(arguments) == 7): # the inputs are -i [input file] -ihdf5 [input archive] -ohdf5 [output archive] -g [the group with inputs]
+if ( len(arguments) in [7,8,9,10] ): # the inputs are -i [input file] -ihdf5 [input archive] -ohdf5 [output archive] -g [the group with inputs]
     arg_index = arguments.index("-i")
     inputfilename = arguments[arg_index+1]
     arg_index = arguments.index("-ohdf5")
@@ -47,6 +50,8 @@ if ( len(arguments) == 9 or len(arguments) == 7): # the inputs are -i [input fil
         copy_archive = False
     arg_index = arguments.index("-g")
     groupname = arguments[arg_index+1]
+    override = ("-override" in arguments)
+
 elif arguments[1] == "--help" or arguments[1] == "-h":
         help()
 else:
@@ -55,10 +60,17 @@ else:
 
 
 ## FUNCTIONS TO WORK WITH THE ARCHIVE
+def replace_input(h_path,name):
+    del h_path[name]
+    print('warning: the input ' + name + ' is erased and will be replaced if possible.')
+
+
 def add_dataset(h_path, sep_line, line):
     if ((0 < len(sep_line)) and (len(sep_line) < 3)):
         print('warning in the line (input too short, entry skipped): ' + line)
         return
+
+    if (sep_line[0] in h_path): replace_input(h_path,sep_line[0])
 
     if (sep_line[2] == 'R'):
         dset_id = h_path.create_dataset(sep_line[0], data=float(sep_line[1]))
@@ -89,6 +101,8 @@ def add_dataset_array(h_path, sep_line, line):
     for k1 in range(4, len(sep_line)):
         if (sep_line[k1] == '#'): k_end = k1  # check for comment
 
+    if (name in h_path): replace_input(h_path, name)
+
     if (type == 'R'):
         data = np.asarray(sep_line[4:k_end], dtype='d')
     elif (type == 'I'):
@@ -109,6 +123,8 @@ def add_dataset_matrix(h_path, aggregated_lines, driving_line):
     Nrow = int(sep_line[4])
     Ncol = int(sep_line[5])
     transpose = (sep_line[0] == '$matrixtr')
+
+    if (name in h_path): replace_input(h_path, name)
 
     for row in aggregated_lines:
         if (len(row) != Ncol): # check if all lines matches the given length
@@ -137,7 +153,16 @@ if copy_archive: shutil.copyfile(source_archive,target_archive)
 
 with open(inputfilename, "r") as InputFile, h5py.File(target_archive, 'a') as GeneratedFile: # access option http://docs.h5py.org/en/stable/high/file.html#file
     lines = InputFile.readlines()
-    grp = GeneratedFile.create_group(groupname)
+
+    try:
+        grp = GeneratedFile.create_group(groupname)
+    except:
+        if override:
+            grp = GeneratedFile[groupname]
+            print('warning: group already exists, possible conflicts will be overwritten, consider repacking if applied.')
+        else:
+            print("Problem creating group, consider '-override' option for adding new inputs in existing group.")
+            exit(1)
 
     k_agg = 0
     driving_line = []

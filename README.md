@@ -6,6 +6,7 @@ This scripts converts input files of two types to HDF5 file.
 usage: python create_universal_HDF5.py -i [input file] -ihdf5 [input archive] -ohdf5 [output archive] -g [the group with inputs]
 
 The input archive is optional, output archive is a copy of the input archive with the inputs added.
+The code cannot by default add to an existing group. Using '-override' flag allows this option. Existing datasets are replaced (former are unlinked, consider repacking if applied).
 ```
 The arguments need to be given except optional. There is no need to order them.
 
