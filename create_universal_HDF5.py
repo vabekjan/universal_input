@@ -60,7 +60,7 @@ else:
 
 
 ## FUNCTIONS TO WORK WITH THE ARCHIVE
-def replace_input(h_path,name):
+def delete_input(h_path,name):
     del h_path[name]
     print('warning: the input ' + name + ' is erased and will be replaced if possible.')
 
@@ -70,7 +70,7 @@ def add_dataset(h_path, sep_line, line):
         print('warning in the line (input too short, entry skipped): ' + line)
         return
 
-    if (sep_line[0] in h_path): replace_input(h_path,sep_line[0])
+    if (sep_line[0] in h_path): delete_input(h_path,sep_line[0])
 
     if (sep_line[2] == 'R'):
         dset_id = h_path.create_dataset(sep_line[0], data=float(sep_line[1]))
@@ -101,7 +101,7 @@ def add_dataset_array(h_path, sep_line, line):
     for k1 in range(4, len(sep_line)):
         if (sep_line[k1] == '#'): k_end = k1  # check for comment
 
-    if (name in h_path): replace_input(h_path, name)
+    if (name in h_path): delete_input(h_path, name)
 
     if (type == 'R'):
         data = np.asarray(sep_line[4:k_end], dtype='d')
@@ -124,7 +124,7 @@ def add_dataset_matrix(h_path, aggregated_lines, driving_line):
     Ncol = int(sep_line[5])
     transpose = (sep_line[0] == '$matrixtr')
 
-    if (name in h_path): replace_input(h_path, name)
+    if (name in h_path): delete_input(h_path, name)
 
     for row in aggregated_lines:
         if (len(row) != Ncol): # check if all lines matches the given length
