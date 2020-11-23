@@ -1,0 +1,13 @@
+#!/bin/sh
+# First testing procedure
+
+rm params/*
+
+gfortran util.f90 libraries.f90 main.f90
+gfortran -o a.out *.o
+
+./a.out #run model
+rm *.o
+
+echo "done"
+

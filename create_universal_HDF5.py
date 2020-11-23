@@ -58,6 +58,8 @@ else:
     print("The code now requires precise specification of input arguments")
     exit(1)
 
+## global names etc.
+multiparam_path = 'multiparameters'
 
 ## FUNCTIONS TO WORK WITH THE ARCHIVE
 def delete_input(h_path,name):
@@ -146,6 +148,18 @@ def add_dataset_matrix(h_path, aggregated_lines, driving_line):
     dset_id = h_path.create_dataset(name, data=data)
     dset_id.attrs['units'] = np.string_('[' + unit + ']')
 
+def try_open_group(file,groupname,force_open):
+    try:
+        grp = file.create_group(groupname)
+        return grp
+    except:
+        if force_open:
+            grp = file[groupname]
+            print('warning: group already exists, possible conflicts will be overwritten, consider repacking if applied.')
+            return grp
+        else:
+            print("Problem creating group, consider '-override' option for adding new inputs into an existing group.")
+            exit(1)
 
 ## MAIN PROGRAM
 if copy_archive: shutil.copyfile(source_archive,target_archive)
@@ -154,36 +168,77 @@ if copy_archive: shutil.copyfile(source_archive,target_archive)
 with open(inputfilename, "r") as InputFile, h5py.File(target_archive, 'a') as GeneratedFile: # access option http://docs.h5py.org/en/stable/high/file.html#file
     lines = InputFile.readlines()
 
-    try:
-        grp = GeneratedFile.create_group(groupname)
-    except:
-        if override:
-            grp = GeneratedFile[groupname]
-            print('warning: group already exists, possible conflicts will be overwritten, consider repacking if applied.')
-        else:
-            print("Problem creating group, consider '-override' option for adding new inputs into an existing group.")
-            exit(1)
+    grp = try_open_group(GeneratedFile,groupname,override)
 
     k_agg = 0
     driving_line = []
     aggregated_lines = []
+    adding_matrix = False
+    adding_multiparametric = False
+    multiparametric_aggregated = []
     for line in lines:
-        sep_line = line.split();  # separate the line
+        sep_line = line.split()  # separate the line
         if ((len(sep_line) == 0) or (sep_line[0] == '#') or (sep_line[0] == '##')):
             pass  # print('empty or commented line')
         elif (k_agg > 0):
             aggregated_lines.append(sep_line)
             k_agg = k_agg - 1
             if (k_agg == 0):
-                add_dataset_matrix(grp, aggregated_lines, driving_line)  # at the moment we need precise alignment
-                driving_line = []
-                aggregated_lines = []
+                if adding_matrix:
+                    add_dataset_matrix(grp, aggregated_lines, driving_line)  # at the moment we need precise alignment
+                    driving_line = []
+                    aggregated_lines = []
+                    adding_matrix = False
+                elif adding_multiparametric:
+                    multiparametric_aggregated = aggregated_lines
         elif (sep_line[0] == '$array'):
             add_dataset_array(grp, sep_line, line)  # at the moment we need precise alignment
         elif ((sep_line[0] == '$matrix') or (sep_line[0] == '$matrixtr')):
             driving_line = line
             k_agg = int(sep_line[4])
+            adding_matrix = True
+        elif (sep_line[0] == '$multiparametric'):
+            driving_line = line
+            k_agg = int(sep_line[1])
+            adding_multiparametric = True
         else:
             add_dataset(grp, sep_line, line)
 
-print('done');
+
+
+if adding_multiparametric:
+    # create many files with the chosen parameters
+    N_simulations = len(multiparametric_aggregated) - 3
+    names = multiparametric_aggregated[0]
+    N_params = len(names)
+    dtypes = multiparametric_aggregated[1]
+    units = multiparametric_aggregated[2]
+
+    values = multiparametric_aggregated[3:]
+
+    if os.path.exists(multiparam_path) and os.path.isdir(multiparam_path):
+        shutil.rmtree(multiparam_path)
+    os.mkdir(multiparam_path)
+    for k1 in range(N_simulations):
+        target_archive_tmp = os.path.join(multiparam_path,target_archive.replace('.h5','_'+str(k1+1)+'.h5'))
+        shutil.copyfile(target_archive,target_archive_tmp)
+
+        with h5py.File(target_archive_tmp, 'a') as GeneratedFile:
+
+            grp = try_open_group(GeneratedFile, groupname, True)
+
+            for k2 in range(N_params):
+                # create artificial line to be added the regular way
+                line = names[k2] + '\t' + values[k1][k2] + '\t' + dtypes[k2] + '\t' + units[k2]
+                add_dataset(grp, line.split(), line)
+
+    with h5py.File(target_archive, 'a') as GeneratedFile: # add parameters in the driving file
+
+        grp = try_open_group(GeneratedFile, groupname, True)
+
+        for k1 in range(N_params):
+            sep_line = ['$array', names[k1], dtypes[k1], units[k1]]
+            for k2 in range(N_simulations): sep_line.append(values[k1][k2])
+            add_dataset_array(grp,sep_line,'multiparametric, variable ' + names[k2])
+
+print('done')
