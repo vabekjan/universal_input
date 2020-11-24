@@ -77,7 +77,10 @@ def add_dataset(h_path, sep_line, line):
     if (sep_line[2] == 'R'):
         dset_id = h_path.create_dataset(sep_line[0], data=float(sep_line[1]))
     elif (sep_line[2] == 'I'):
-        dset_id = h_path.create_dataset(sep_line[0], data=int(sep_line[1]))
+        try:
+            dset_id = h_path.create_dataset(sep_line[0], data=int(sep_line[1]))
+        except:
+            dset_id = h_path.create_dataset(sep_line[0], data=int(float(sep_line[1]))) # if integers are in scientific notation
     elif (sep_line[2] == 'S'):
         dset_id = h_path.create_dataset(sep_line[0], data=np.string_(sep_line[1]))
     else:
@@ -108,7 +111,10 @@ def add_dataset_array(h_path, sep_line, line):
     if (type == 'R'):
         data = np.asarray(sep_line[4:k_end], dtype='d')
     elif (type == 'I'):
-        data = np.asarray(sep_line[4:k_end], dtype='i')
+        try:
+            data = np.asarray(sep_line[4:k_end], dtype='i')
+        except: # if integers are in scientific notation
+            data = np.asarray(sep_line[4:k_end], dtype='d').astype(int)
     elif (type == 'S'):
         data = np.asarray(np.string_(sep_line[4:k_end]))
     else:
@@ -148,14 +154,14 @@ def add_dataset_matrix(h_path, aggregated_lines, driving_line):
     dset_id = h_path.create_dataset(name, data=data)
     dset_id.attrs['units'] = np.string_('[' + unit + ']')
 
-def try_open_group(file,groupname,force_open):
+def try_open_group(file,groupname,force_open,warning):
     try:
         grp = file.create_group(groupname)
         return grp
     except:
         if force_open:
             grp = file[groupname]
-            print('warning: group already exists, possible conflicts will be overwritten, consider repacking if applied.')
+            if warning: print('warning: group already exists, possible conflicts will be overwritten, consider repacking if applied.')
             return grp
         else:
             print("Problem creating group, consider '-override' option for adding new inputs into an existing group.")
@@ -168,7 +174,7 @@ if copy_archive: shutil.copyfile(source_archive,target_archive)
 with open(inputfilename, "r") as InputFile, h5py.File(target_archive, 'a') as GeneratedFile: # access option http://docs.h5py.org/en/stable/high/file.html#file
     lines = InputFile.readlines()
 
-    grp = try_open_group(GeneratedFile,groupname,override)
+    grp = try_open_group(GeneratedFile,groupname,override,True)
 
     k_agg = 0
     driving_line = []
@@ -199,7 +205,7 @@ with open(inputfilename, "r") as InputFile, h5py.File(target_archive, 'a') as Ge
             adding_matrix = True
         elif (sep_line[0] == '$multiparametric'):
             driving_line = line
-            k_agg = int(sep_line[1])
+            k_agg = int(sep_line[1])+3
             adding_multiparametric = True
         else:
             add_dataset(grp, sep_line, line)
@@ -225,7 +231,7 @@ if adding_multiparametric:
 
         with h5py.File(target_archive_tmp, 'a') as GeneratedFile:
 
-            grp = try_open_group(GeneratedFile, groupname, True)
+            grp = try_open_group(GeneratedFile, groupname, True, False)
 
             for k2 in range(N_params):
                 # create artificial line to be added the regular way
@@ -234,11 +240,11 @@ if adding_multiparametric:
 
     with h5py.File(target_archive, 'a') as GeneratedFile: # add parameters in the driving file
 
-        grp = try_open_group(GeneratedFile, groupname, True)
+        grp = try_open_group(GeneratedFile, groupname, True, False)
 
         for k1 in range(N_params):
             sep_line = ['$array', names[k1], dtypes[k1], units[k1]]
-            for k2 in range(N_simulations): sep_line.append(values[k1][k2])
-            add_dataset_array(grp,sep_line,'multiparametric, variable ' + names[k2])
+            for k2 in range(N_simulations): sep_line.append(values[k2][k1])
+            add_dataset_array(grp,sep_line,'multiparametric, variable ' + names[k1])
 
 print('done')

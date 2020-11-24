@@ -3,11 +3,9 @@
 
 rm params/*
 
-gfortran util.f90 libraries.f90 main.f90
-gfortran -o a.out *.o
+gfortran libraries.f90 main.f90 -o all_combinations.e
 
-./a.out #run model
-rm *.o
+./all_combinations.e
 
 echo "done"
 

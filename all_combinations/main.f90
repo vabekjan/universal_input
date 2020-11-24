@@ -10,6 +10,8 @@ use libraries;
 
   IMPLICIT NONE
 
+  character(*), parameter :: driving_file = "multiparam.inp"
+  character(*), parameter :: output_file = "list_of_combinations.dat"
 
   real*8, dimension(:,:), Allocatable :: values;
   real*8, dimension(:), Allocatable :: val_min,val_max;
@@ -30,11 +32,11 @@ use libraries;
   !val_max = 0.09d0;
 
 !!! LOAD ALL IN INITIAL PARAMETERS
-	cwd=TRIM("param.txt");
+	cwd=TRIM(driving_file);
 	N_par = filelength(cwd);
 	allocate(n_drive(1:N_par)); allocate(val_min(1:N_par)); allocate(val_max(1:N_par));
 	
-	open(unit=1, file="param.txt",form="FORMATTED",action='read')
+	open(unit=1, file=driving_file,form="FORMATTED",action='read')
 	open(UNIT=2,FILE="n_drive.dat",FORM="FORMATTED",action='write');
 	do k1 = 1, N_par
 		read(unit=1,fmt=*) val_min(k1), val_max(k1), n_drive(k1);
@@ -83,7 +85,7 @@ use libraries;
 
 
 write(*,*) n_drive;
-	open(UNIT=1,FILE="list.txt",FORM="FORMATTED",action='write');
+	open(UNIT=1,FILE=output_file,FORM="FORMATTED",action='write');
 	open(UNIT=2,FILE="values.txt",FORM="FORMATTED",action='write');
 	allocate(setup(1:N_par));
 	do k1 = 1, N_par
@@ -94,40 +96,17 @@ write(*,*) n_drive;
 	write(UNIT=2,fmt='(e12.6,X)',advance='no') dfloat(k1);
 write(*,*) setup;
 
-	write(dum_w,'(E12.6)') dfloat(k1);
-	cwd=TRIM("params/s_" // TRIM(dum_w) // ".txt" ); 
-	open(UNIT=3,FILE=cwd,FORM="FORMATTED",action='write');
 		do k2 = 1, (N_par-1)
 			write(UNIT=1,fmt='(e12.6,X)',advance='no') values(k2,setup(k2));
-			write(UNIT=3,fmt='(e12.6,X)',advance='no') values(k2,setup(k2));
 		enddo
 		write(UNIT=1,fmt='(e12.6)') values(k2,setup(N_par));
-		write(UNIT=3,fmt='(e12.6)') values(k2,setup(N_par));
-	close(3);
-	if ( .not. (k1 == N_tot ) ) then
-		call increase(1,n_drive,setup);
-	endif
+		if ( .not. (k1 == N_tot ) ) then
+			call increase(1,n_drive,setup);
+		endif
 	  
 	
 	enddo
 
   close(1); close(2);
 
-
-  
-
 END PROGRAM makelist
-
-
-
-
-
-
-
-
-
-
-
-
-
-
