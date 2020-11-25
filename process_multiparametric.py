@@ -11,7 +11,7 @@ def help():
     print("usage: python create_universal_HDF5.py -i-reg [Free-form input] -i-mp [multiparam FORTRAN input] [-keep-intermediate]\n"
           "                                       -univ-inps [usual inputs]\n"
           "       The inputs are the free-form input file and the driving file for FORTRAN, all the inputs of the universal input \n"
-          '       (except the input file) must be placed as last arguments after the flag "-univ-inps".')
+          '       (except the input file) must be placed as last arguments after the flag "-univ-inps".\n'
           '       ("-keep-intermediate" is a debugging flag to keep intermediate files.)')
     exit(0)
 
