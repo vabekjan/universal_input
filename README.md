@@ -62,6 +62,7 @@ There is a supplementary script `process_multiparametric.py`. This script uses o
 a|	R|	SI|	0	|1	|1
 b|	I|	SI|	0	|1	|0
 c|	R|	SI|	0	|1	|-1
+
 The special value of "-1" of intermediate points takes the variable as not varying and only the *maximum* is considered.
 
 
