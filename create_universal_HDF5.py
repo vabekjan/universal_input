@@ -193,10 +193,10 @@ with open(inputfilename, "r") as InputFile, h5py.File(target_archive, 'a') as Ge
                 if adding_matrix:
                     add_dataset_matrix(grp, aggregated_lines, driving_line)  # at the moment we need precise alignment
                     driving_line = []
-                    aggregated_lines = []
                     adding_matrix = False
                 elif adding_multiparametric:
                     multiparametric_aggregated = aggregated_lines
+                aggregated_lines = []
         elif (sep_line[0] == '$array'):
             add_dataset_array(grp, sep_line, line)  # at the moment we need precise alignment
         elif ((sep_line[0] == '$matrix') or (sep_line[0] == '$matrixtr')):
