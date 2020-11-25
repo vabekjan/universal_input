@@ -1,16 +1,16 @@
 # Universal input
 This scripts converts input files of two types to HDF5 file.
 
-### Usage:
+## Usage:
 ``` bash
-usage: python create_universal_HDF5.py -i [input file] -ihdf5 [input archive] -ohdf5 [output archive] -g [the group with inputs]
+usage: python create_universal_HDF5.py -i [input file] [-ihdf5 [input archive]] -ohdf5 [output archive] -g [the group with inputs] [-override]
 
 The input archive is optional, output archive is a copy of the input archive with the inputs added.
 The code cannot by default add to an existing group. Using '-override' flag allows this option. Existing datasets are replaced (former are unlinked, consider repacking if applied).
 ```
 The arguments need to be given except optional. There is no need to order them.
 
-### The Free Form Format Input
+## The Free Form Format Input
 The input lines then have following form:
 
 ### 1: standard lines
@@ -39,3 +39,29 @@ Using keywords defined by $.
 9	10	11	12
 
 - `$matrixtr`. The same as `$matrix`, but the matrix is transposed in the HDF5 archive (the input form is exactly the same).
+
+- `$multiparametric`. This is an advanced operation to generate a bunch of starting hdf5-files for a list of varying parmeters. This input consists of multiple lines. First line is the keyword followed by the total amount of parameter combinations. Next lines specify: **names**, **types** and **units**. These values are stored at two places:
+    1) In the usual output archive, all parameters are stored as arrays defined by respective columns.
+    2) In the directory ***multiparameters***, there are copies of the original archive enumerated by rows and each of these copies contais only the respective row.
+
+    There is an example of the input file, see also details in the next paragraph.
+>$multiparametric	6 \
+a	b	c	\
+R	I	R	\
+SI	SI	SI	\
+0.000000E+00 0.000000E+00 0.100000E+01\
+0.500000E+00 0.000000E+00 0.100000E+01\
+0.100000E+01 0.000000E+00 0.100000E+01\
+0.000000E+00 0.100000E+01 0.100000E+01\
+0.500000E+00 0.100000E+01 0.100000E+01\
+0.100000E+01 0.100000E+01 0.100000E+01
+## Multiparametric studies
+There is a supplementary script `process_multiparametric.py`. This script uses one FORTRAN program designed to generate all possible combinations of parameters from given ranges. The FORTRAN program is compiled by `compile_and_copy_multiparam.sh`. The generated executable is needed for the script. The additional input for this script are the definition of the desired variables with their ranges. The form is:
+| Name of the variable | Type | Units  |  minimum | maximum | # of intermediate points|
+| ------ | ------ | ------ | ------ | ------ | ------ |
+a|	R|	SI|	0	|1	|1
+b|	I|	SI|	0	|1	|0
+c|	R|	SI|	0	|1	|-1
+The special value of "-1" of intermediate points takes the variable as not varying and only the *maximum* is considered.
+
+

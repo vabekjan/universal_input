@@ -1,0 +1,47 @@
+lambda	800e-9	R	SI
+   
+I0	5.6e18	R	SI
+
+# We use the comment to separate sections
+
+Ip	0.5	R	a.u.
+Nx	1000	I	-
+a crappy line with invalid form
+filename	ionisations.inp	S	-
+
+ph	1+1i	C	# complex numbers are not supported yet
+
+$array myrarrray R SI	3.14 2.71 1.0 # and with a comment, this is the only allowed commenting way
+$array myiarrray I -	1 2 3 4 5
+$array mysarrray S -	par1 par2 longpar3
+
+X	3
+Y
+
+n1	1	R	-
+E	5	R
+
+$matrix	mymatrixreal	R	SI	3	4
+1	2	3	4
+5	6	7	8
+9	10	11	12
+
+$matrix	mymatrixinteger	I	-	3	4
+1	2	3	4
+5	6	7	8
+9	10	11	12
+
+
+R	3	R	SI
+
+
+$multiparametric	6
+a	b	c	
+R	I	R	
+-	-	-	
+0.000000E+00 0.000000E+00 0.100000E+01
+0.500000E+00 0.000000E+00 0.100000E+01
+0.100000E+01 0.000000E+00 0.100000E+01
+0.000000E+00 0.100000E+01 0.100000E+01
+0.500000E+00 0.100000E+01 0.100000E+01
+0.100000E+01 0.100000E+01 0.100000E+01
