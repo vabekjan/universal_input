@@ -10,8 +10,8 @@ use libraries;
 
   IMPLICIT NONE
 
-  character(*), parameter :: driving_file = "multiparam.inp"
-  character(*), parameter :: output_file = "list_of_combinations.dat"
+  character(*), parameter :: driving_file = "multiparam_FORTRAN.inp"
+  character(*), parameter :: output_file = "list_of_combinations_FORTRAN.dat"
 
   real*8, dimension(:,:), Allocatable :: values;
   real*8, dimension(:), Allocatable :: val_min,val_max;
