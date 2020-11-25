@@ -1,33 +1,32 @@
 # Two files: expected input file + input for multiparameteric
-import numpy as np
 import sys
 import os
-import shutil
 import subprocess
 
-
 arguments = sys.argv
-
-inputfilenamemp = 'MultiparamInputs.inp'
 intermediate_filename = 'multiparam.tmp'
+run_args = ['python3', 'create_universal_HDF5.py', '-i', intermediate_filename]
 
-# run_args = ['python3', 'create_universal_HDF5.py', '-i', intermediate_filename]
-run_args = ['python3', 'create_universal_HDF5.py']
+def help():
+    print("usage: python create_universal_HDF5.py -i-reg [Free-form input] -i-mp [multiparam FORTRAN input] -univ-inps [usual inputs]\n"
+          "       The inputs are the free-form input file and the driving file for FORTRAN, all the inputs of the universal input \n"
+          '       (except the input file) must be placed as last arguments after the flag "-univ-inps".')
+    exit(0)
 
 ## Treat arguments
-arg_index = arguments.index("-i-reg")
-inputfilename = arguments[arg_index+1]
-arg_index = arguments.index("-i-mp")
-inputfilenamemp = arguments[arg_index+1]
-arg_index = arguments.index("-univ-inps")
-run_args = run_args + arguments[(arg_index+1):]
-print(arguments[(arg_index+1):])
+if (arguments[1] == "--help" or arguments[1] == "-h"):
+    help()
+else:
+    arg_index = arguments.index("-i-reg")
+    inputfilename = arguments[arg_index+1]
+    arg_index = arguments.index("-i-mp")
+    inputfilenamemp = arguments[arg_index+1]
+    arg_index = arguments.index("-univ-inps")
+    run_args = run_args + arguments[(arg_index+1):]
 
-print(run_args)
-
+## Prepare files for the FORTRAN code
 with open(inputfilenamemp, "r") as InputMP:
     lines = InputMP.readlines()
-
 names = ''
 dtypes = ''
 units = ''
@@ -48,52 +47,24 @@ for line in lines:
         else:
             content = content + '\n' + sep_line[3] + '\t' + sep_line[4] + '\t' + sep_line[5]
 
-
-try:
-    os.remove('testfile.dat')
-except:
-    pass
-
 with open('multiparam_FORTRAN.inp','w') as f:
     f.write(content)
 
-
-try:
-    os.remove('testmp1.h5')
-except:
-    pass
-
+## run FORTRAN
 subprocess.run('./all_combinations.e')
 os.remove('multiparam_FORTRAN.inp')
 
+## append FORTRAN output to the universal-input driving file
 with open('list_of_combinations_FORTRAN.dat') as f:
     content = f.read()
 os.remove('list_of_combinations_FORTRAN.dat')
 
-n_lines = content.count('\n')
-content = '$multiparametric\t' + str(n_lines) + '\n' + names + '\n' + dtypes + '\n' + units + '\n' + content
+content = '$multiparametric\t' + str(content.count('\n')) + '\n' + names + '\n' + dtypes + '\n' + units + '\n' + content
 
-with open('new_list_of_combinations2.dat','w') as f_tmp, open(inputfilename,'r') as f_reg:
+with open(intermediate_filename,'w') as f_tmp, open(inputfilename,'r') as f_reg:
     f_tmp.write(f_reg.read()+'\n'+content)
 
-
-with open('list_of_combinations.dat') as f:
-    s = f.read()
-
-print(s)
-
-xxx = 'a\n'+s
-
-print(xxx)
-
-with open('new_list_of_combinations.dat','w') as f:
-    f.write(xxx)
-
-print('a multiparam')
-
+## run the universal-input
 subprocess.run(run_args)
-# subprocess.run(['python3', 'create_universal_HDF5.py', '-i', 'list_of_combinations_ext.dat', '-ohdf5', 'testmp1.h5', '-g', 'inputs'])
-# subprocess.run(['python3', 'create_universal_HDF5.py -i list_of_combinations_ext.dat -ohdf5 testmp1.h5 -g inputs'])
-# subprocess.run(['python3', 'create_universal_HDF5.py', ['-i', 'list_of_combinations_ext.dat', '-ohdf5', 'testmp1.h5', '-g', 'inputs']])
-# python3 create_universal_HDF5.py -i list_of_combinations_ext.dat -ohdf5 testmp1.h5 -g inputs
+os.remove(intermediate_filename)
 # https://stackoverflow.com/questions/7152340/using-a-python-subprocess-call-to-invoke-a-python-script
