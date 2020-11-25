@@ -1,5 +1,4 @@
 # Universal input
-This scripts converts input files of two types to HDF5 file.
 
 ## Usage:
 ``` bash
