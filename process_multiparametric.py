@@ -5,7 +5,7 @@ import subprocess
 
 arguments = sys.argv
 intermediate_filename = 'multiparam.tmp'
-run_args = ['python3', 'create_universal_HDF5.py', '-i', intermediate_filename]
+run_args = ['python3', os.environ['UNIV_INPUT']+'/create_universal_HDF5.py', '-i', intermediate_filename]
 
 def help():
     print("usage: python create_universal_HDF5.py -i-reg [Free-form input] -i-mp [multiparam FORTRAN input] [-keep-intermediate]\n"
@@ -55,7 +55,9 @@ with open('multiparam_FORTRAN.inp','w') as f:
     f.write(content)
 
 ## run FORTRAN
-subprocess.run('./all_combinations.e')
+program_path = os.environ['UNIV_INPUT']+'/all_combinations.e'
+# print(program_path)
+subprocess.run(program_path)
 if (not keep_intermadiate): os.remove('multiparam_FORTRAN.inp')
 
 ## append FORTRAN output to the universal-input driving file
