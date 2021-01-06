@@ -197,7 +197,7 @@ with open(inputfilename, "r") as InputFile, h5py.File(target_archive, 'a') as Ge
                 elif adding_multiparametric:
                     multiparametric_aggregated = aggregated_lines
                 aggregated_lines = []
-        elif (sep_line[0] == '$group_change'):
+        elif (sep_line[0] == '$change_group'):
             groupname = sep_line[1]
             grp = try_open_group(GeneratedFile, groupname, override, True)
         elif (sep_line[0] == '$array'):
@@ -223,16 +223,15 @@ with open(inputfilename, "r") as InputFile, h5py.File(target_archive, 'a') as Ge
 
 if adding_multiparametric:
     # create many files with the chosen parameters
+    names = multiparametric_aggregated[0]
     if multiparametric_sortgroups:
         N_simulations = len(multiparametric_aggregated) - 4
-        groups = multiparametric_aggregated[0]
+        groups = multiparametric_aggregated[1]
         lineshift = 1
     else:
         N_simulations = len(multiparametric_aggregated) - 3
         groupname = multiparametric_groupname
         lineshift = 0
-
-    names = multiparametric_aggregated[lineshift+0]
     N_params = len(names)
     dtypes = multiparametric_aggregated[lineshift+1]
     units = multiparametric_aggregated[lineshift+2]
