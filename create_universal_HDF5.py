@@ -197,16 +197,25 @@ with open(inputfilename, "r") as InputFile, h5py.File(target_archive, 'a') as Ge
                 elif adding_multiparametric:
                     multiparametric_aggregated = aggregated_lines
                 aggregated_lines = []
+        elif (sep_line[0] == '$group_change'):
+            groupname = sep_line[1]
+            grp = try_open_group(GeneratedFile, groupname, override, True)
         elif (sep_line[0] == '$array'):
             add_dataset_array(grp, sep_line, line)  # at the moment we need precise alignment
         elif ((sep_line[0] == '$matrix') or (sep_line[0] == '$matrixtr')):
             driving_line = line
             k_agg = int(sep_line[4])
             adding_matrix = True
-        elif (sep_line[0] == '$multiparametric'):
-            driving_line = line
-            k_agg = int(sep_line[1])+3
+        elif (sep_line[0] == '$multiparametric') or (sep_line[0] == '$multiparametric_grouped'):
             adding_multiparametric = True
+            driving_line = line
+            if (sep_line[0] == '$multiparametric'):
+                k_agg = int(sep_line[1]) + 3
+                multiparametric_groupname = groupname
+                multiparametric_sortgroups = False
+            elif (sep_line[0] == '$multiparametric_grouped'):
+                k_agg = int(sep_line[1]) + 4
+                multiparametric_sortgroups = True
         else:
             add_dataset(grp, sep_line, line)
 
@@ -214,13 +223,21 @@ with open(inputfilename, "r") as InputFile, h5py.File(target_archive, 'a') as Ge
 
 if adding_multiparametric:
     # create many files with the chosen parameters
-    N_simulations = len(multiparametric_aggregated) - 3
-    names = multiparametric_aggregated[0]
-    N_params = len(names)
-    dtypes = multiparametric_aggregated[1]
-    units = multiparametric_aggregated[2]
+    if multiparametric_sortgroups:
+        N_simulations = len(multiparametric_aggregated) - 4
+        groups = multiparametric_aggregated[0]
+        lineshift = 1
+    else:
+        N_simulations = len(multiparametric_aggregated) - 3
+        groupname = multiparametric_groupname
+        lineshift = 0
 
-    values = multiparametric_aggregated[3:]
+    names = multiparametric_aggregated[lineshift+0]
+    N_params = len(names)
+    dtypes = multiparametric_aggregated[lineshift+1]
+    units = multiparametric_aggregated[lineshift+2]
+
+    values = multiparametric_aggregated[(lineshift+3):]
 
     if os.path.exists(multiparam_path) and os.path.isdir(multiparam_path):
         shutil.rmtree(multiparam_path)
@@ -230,19 +247,24 @@ if adding_multiparametric:
         shutil.copyfile(target_archive,target_archive_tmp)
 
         with h5py.File(target_archive_tmp, 'a') as GeneratedFile:
-
-            grp = try_open_group(GeneratedFile, groupname, True, False)
+            if not(multiparametric_sortgroups):
+                grp = try_open_group(GeneratedFile, groupname, True, False)
 
             for k2 in range(N_params):
+                if multiparametric_sortgroups:
+                    grp = try_open_group(GeneratedFile, groups[k2], True, False)
                 # create artificial line to be added the regular way
                 line = names[k2] + '\t' + values[k1][k2] + '\t' + dtypes[k2] + '\t' + units[k2]
                 add_dataset(grp, line.split(), line)
 
     with h5py.File(target_archive, 'a') as GeneratedFile: # add parameters in the driving file
 
-        grp = try_open_group(GeneratedFile, groupname, True, False)
+        if not(multiparametric_sortgroups):
+            grp = try_open_group(GeneratedFile, groupname, True, False)
 
         for k1 in range(N_params):
+            if multiparametric_sortgroups:
+                grp = try_open_group(GeneratedFile, groups[k1], True, False)
             sep_line = ['$array', names[k1], dtypes[k1], units[k1]]
             for k2 in range(N_simulations): sep_line.append(values[k2][k1])
             add_dataset_array(grp,sep_line,'multiparametric, variable ' + names[k1])
