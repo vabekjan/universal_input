@@ -25,7 +25,7 @@ else:
     inputfilenamemp = arguments[arg_index+1]
     arg_index = arguments.index("-univ-inps")
     run_args = run_args + arguments[(arg_index+1):]
-    keep_intermadiate = ("-keep-intermediate" in arguments)
+    keep_intermediate = ("-keep-intermediate" in arguments)
     grouped = ("-multiparam-groups" in arguments)
 
 
@@ -65,12 +65,12 @@ with open('multiparam_FORTRAN.inp','w') as f:
 program_path = os.environ['UNIV_INPUT_PATH']+'/all_combinations.e'
 # print(program_path)
 subprocess.run(program_path)
-if (not keep_intermadiate): os.remove('multiparam_FORTRAN.inp')
+if (not keep_intermediate): os.remove('multiparam_FORTRAN.inp')
 
 ## append FORTRAN output to the universal-input driving file
 with open('list_of_combinations_FORTRAN.dat') as f:
-    content = f.read()
-if (not keep_intermadiate): os.remove('list_of_combinations_FORTRAN.dat')
+    values = f.read()
+if (not keep_intermediate): os.remove('list_of_combinations_FORTRAN.dat')
 
 if grouped:
     content = '$multiparametric_grouped\t' + str(content.count('\n')) + '\n' + names + '\n'
@@ -78,12 +78,12 @@ if grouped:
 else:
     content = '$multiparametric\t' + str(content.count('\n')) + '\n' + names + '\n'
 
-content = content + dtypes + '\n' + units + '\n' + content
+content = content + dtypes + '\n' + units + '\n' + values
 
 with open(intermediate_filename,'w') as f_tmp, open(inputfilename,'r') as f_reg:
     f_tmp.write(f_reg.read()+'\n'+content)
 
 ## run the universal-input
 subprocess.run(run_args)
-if (not keep_intermadiate): os.remove(intermediate_filename)
+if (not keep_intermediate): os.remove(intermediate_filename)
 # https://stackoverflow.com/questions/7152340/using-a-python-subprocess-call-to-invoke-a-python-script
