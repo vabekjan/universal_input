@@ -72,8 +72,12 @@ with open('list_of_combinations_FORTRAN.dat') as f:
     content = f.read()
 if (not keep_intermadiate): os.remove('list_of_combinations_FORTRAN.dat')
 
-content = '$multiparametric\t' + str(content.count('\n')) + '\n' + names + '\n'
-if grouped: content = content + groups + '\n'
+if grouped:
+    content = '$multiparametric_grouped\t' + str(content.count('\n')) + '\n' + names + '\n'
+    content = content + groups + '\n'
+else:
+    content = '$multiparametric\t' + str(content.count('\n')) + '\n' + names + '\n'
+
 content = content + dtypes + '\n' + units + '\n' + content
 
 with open(intermediate_filename,'w') as f_tmp, open(inputfilename,'r') as f_reg:
