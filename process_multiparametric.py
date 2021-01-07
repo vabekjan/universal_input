@@ -73,10 +73,10 @@ with open('list_of_combinations_FORTRAN.dat') as f:
 if (not keep_intermediate): os.remove('list_of_combinations_FORTRAN.dat')
 
 if grouped:
-    content = '$multiparametric_grouped\t' + str(content.count('\n')) + '\n' + names + '\n'
+    content = '$multiparametric_grouped\t' + str(values.count('\n')) + '\n' + names + '\n'
     content = content + groups + '\n'
 else:
-    content = '$multiparametric\t' + str(content.count('\n')) + '\n' + names + '\n'
+    content = '$multiparametric\t' + str(values.count('\n')) + '\n' + names + '\n'
 
 content = content + dtypes + '\n' + units + '\n' + values
 
