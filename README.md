@@ -6,6 +6,12 @@ usage: python create_universal_HDF5.py -i [input file] [-ihdf5 [input archive]] 
 
 The input archive is optional, output archive is a copy of the input archive with the inputs added.
 The code cannot by default add to an existing group. Using '-override' flag allows this option. Existing datasets are replaced (former are unlinked, consider repacking if applied).
+
+If task requires investigation of Gauss-Bessel beams, then you have to compile additionally
+python writing_init_field.py
+python cmplxer_from_hdf5_wrtnn_field.py
+
+This will create file initial_field_compexified.h5, which will be used by preprocessor, creating complexified Gauss-Bessel beam in file result.h5
 ```
 The arguments need to be given except optional. There is no need to order them.
 
