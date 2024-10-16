@@ -1,4 +1,5 @@
 # Universal input
+This is a simple parser, which transform text-based inputs into a structured hdf5 archive. It allows for keeping many parameters packed in the hdf5 archive. The simple operation uses scalar datasets, but 1D-array and matrix datasets are possible in advanced operation. Because it is intended for physical applications, the datasets carry an attribute with units. 
 
 ## Usage:
 ``` bash
