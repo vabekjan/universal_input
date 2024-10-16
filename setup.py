@@ -10,7 +10,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'create_universal_HDF5=create_universal_HDF5',  # The command `my_script` calls the script directly
+            'create_universal_HDF5=create_universal_HDF5:run',  # The command `my_script` calls the script directly
         ],
     },
 )
